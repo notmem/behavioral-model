@@ -37,7 +37,7 @@
 #include "SimpleSwitch_server.ipp"
 
 SimpleSwitch::SimpleSwitch(int max_port)
-  : Switch(false), // enable_switch = false
+  : Switch(true), // enable_switch = true
     max_port(max_port),
     input_buffer(1024), egress_buffers(max_port), output_buffer(128),
     pre(new McSimplePreLAG()),
@@ -77,12 +77,12 @@ void SimpleSwitch::transmit_thread() {
 }
 
 void SimpleSwitch::ingress_thread() {
-  Parser *parser = this->get_parser("parser");
-  Pipeline *ingress_mau = this->get_pipeline("ingress");
-
   PHV *phv;
 
   while(1) {
+    Parser *parser = this->get_parser("parser");
+    Pipeline *ingress_mau = this->get_pipeline("ingress");
+
     std::unique_ptr<Packet> packet;
     input_buffer.pop_back(&packet);
 
@@ -209,11 +209,12 @@ void SimpleSwitch::ingress_thread() {
 }
 
 void SimpleSwitch::egress_thread(int port) {
-  Deparser *deparser = this->get_deparser("deparser");
-  Pipeline *egress_mau = this->get_pipeline("egress");
   PHV *phv;
 
   while(1) {
+    Deparser *deparser = this->get_deparser("deparser");
+    Pipeline *egress_mau = this->get_pipeline("egress");
+
     std::unique_ptr<Packet> packet;
     egress_buffers[port].pop_back(&packet);
     phv = packet->get_phv();

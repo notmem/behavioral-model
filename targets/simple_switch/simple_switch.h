@@ -91,6 +91,8 @@ public:
     // it is also part of the original P4 spec
     packet->get_phv()->reset_metadata();
 
+    do_swap();
+
     input_buffer.push_front(std::unique_ptr<Packet>(packet));
     return 0;
   }
